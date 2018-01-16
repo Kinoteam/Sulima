@@ -37,7 +37,7 @@ public class converter {
 		
 			String str = scan.nextLine();
 			again = str.charAt(0);
-
+			scan.close();
 		} 
 		
 		return;

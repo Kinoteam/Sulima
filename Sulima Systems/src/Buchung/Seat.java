@@ -13,7 +13,14 @@ public class Seat {
 		lastName= "";
 	}
 	
-	private Seat(int pNumber, boolean pReserved, String pFirstName, String pLastName) {
+	public Seat(int pSeatNumber) {
+		seatNumber = pSeatNumber;
+		reserved = false;
+		firstName= "";
+		lastName= "";
+	}
+	
+	public Seat(int pNumber, boolean pReserved, String pFirstName, String pLastName) {
 		seatNumber = pNumber;
 		reserved = pReserved;
 		firstName= pFirstName;
