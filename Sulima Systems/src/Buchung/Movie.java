@@ -1,33 +1,37 @@
-package Buchung;
+package buchung;
 
 public class Movie {
 	
+	private int movie_id;
 	private String movieName;
-	private Date Calendar;
+	private int movieDuration;
 	
 	public Movie() {
 		movieName ="";
+		movieDuration = 0;
 	}
 	
-	public Movie(String pMovieName,CharSequence pDay, CharSequence pTime) {
+	public Movie(String pMovieName, int pMovieDuration) {
 		movieName = pMovieName;
-		Calendar = new Date(pDay, pTime);
-	}
-	
-//	public Movie(String pMovieName, int pCalendarEntries) {
-//		movieName = pMovieName;
-//		for (int i=0; i< pCalendarEntries ; i++ ){
-//			Calendar[i] = new Date();
-//		}
-//		
-//	}
-	
-	public void setMovieName(String pMovieName) {
-		this.movieName = pMovieName;
+		movieDuration = pMovieDuration;
 	}
 	
 	public String getMovieName() {
 		return this.movieName;
 	}
+	
+	public int getMovieDuration() {
+		return this.movieDuration;
+	}
+	
+	public void setMovieName(String pMovieName) {
+		this.movieName = pMovieName;
+	}
+	
+	public void setMovieDuration(int pMovieDuration) {
+		this.movieDuration = pMovieDuration;
+	}
+	
+	
 	
 }

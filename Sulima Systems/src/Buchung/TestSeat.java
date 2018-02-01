@@ -1,19 +1,14 @@
-package Buchung;
-
-import java.util.*;
+package buchung;
 
 public class TestSeat {
 
 	public static void main(String[] args) {
 		
-		String letsWatch = "Spider Man";
-		CharSequence date1 = "--01-14";
-		CharSequence time1 = "18:00:00";
-		
-		Movie movieVar = new Movie(letsWatch, date1, time1);
-		System.out.println("We gonna watch " + movieVar.getMovieName());
-		
-		
+		Room room1 = new Room();
+		room1.setNumberOfSeats(100, 20,10);
+		room1.getNumberOfSeats();
+		room1.setRoomId(1);
+		room1.saveRoom();
 		
 	}
 }

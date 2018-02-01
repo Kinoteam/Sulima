@@ -1,4 +1,4 @@
-package Buchung;
+package buchung;
 
 public class Seat {
 	private int seatNumber;

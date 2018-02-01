@@ -1,27 +1,90 @@
-package Buchung;
+package buchung;
 
 public class Room {
-	
+
 	private int roomId;
-	private int nOfSeats;
-	private Seat theater[];
-	
-	
+	private int numberOfSeats;
+	private int numberOfRegularSeats;
+	private int numberOfLoveSeats;
+	private int numberOfLogeSeats;
+
+
 	public Room(){
-		
-		roomId = 0;
-		nOfSeats = 0;
-		theater = null;
-	}
-	
-	public Room(int pRoomId, int pNOfSeats){
-		
-		roomId = pRoomId;
-		nOfSeats = pNOfSeats;
-		for (int i=0; i< nOfSeats ; i++ ){
-			theater[i] = new Seat(i+1);
-		}
-		
+
+		numberOfRegularSeats = 0;
+		numberOfLoveSeats = 0;
+		numberOfLogeSeats = 0;
+		numberOfSeats = 0;
 	}
 
+	public Room(int pNumberOfRegularSeats, int pNumberOfLoveSeats, int pNumberOfLogeSeats){
+
+		numberOfRegularSeats = pNumberOfRegularSeats;
+		numberOfLoveSeats = pNumberOfLoveSeats;
+		numberOfLogeSeats = pNumberOfLogeSeats;
+		numberOfSeats = numberOfRegularSeats + numberOfLoveSeats + numberOfLogeSeats;
+	}
+
+
+	public int getNumberOfSeats() {
+		return this.numberOfSeats;
+	}
+
+	public int getNumberOfRegularSeats() {
+		return this.numberOfRegularSeats;
+	}
+
+	public int getNumberOfLoveSeats() {
+		return this.numberOfLoveSeats;
+	}
+
+	public int getNumberOfLogeSeats() {
+		return this.numberOfLogeSeats;
+	}
+
+	public int getRoomId() {
+		return this.roomId;
+	}
+
+	public void setRoomId(int pRoomId) {
+		roomId = pRoomId;
+	}
+
+	public void setNumberOfSeats(int pNumberOfRegularSeats, int pNumberOfLoveSeats, int pNumberOfLogeSeats) {
+
+		numberOfRegularSeats = pNumberOfRegularSeats;
+		numberOfLoveSeats = pNumberOfLoveSeats;
+		numberOfLogeSeats = pNumberOfLogeSeats;
+		numberOfSeats = numberOfRegularSeats + numberOfLoveSeats + numberOfLogeSeats;
+
+	}
+
+	public void setNumberOfRegularSeats(int pNumberOfRegularSeats) {
+		numberOfRegularSeats = pNumberOfRegularSeats;
+		numberOfSeats = numberOfRegularSeats + numberOfLoveSeats + numberOfLogeSeats;
+	}
+
+	public void setNumberOfLoveSeats(int pNumberOfLoveSeats) {
+		numberOfLoveSeats = pNumberOfLoveSeats;
+		numberOfSeats = numberOfRegularSeats + numberOfLoveSeats + numberOfLogeSeats;
+	}
+
+	public void setNumberOfLogeSeats(int pNumberOfLogeSeats) {
+		numberOfLogeSeats = pNumberOfLogeSeats;
+		numberOfSeats = numberOfRegularSeats + numberOfLoveSeats + numberOfLogeSeats;
+	}
+
+	public void saveRoom() {
+
+		Database db = new Database();
+		String query = "SELECT * FROM ROOMS WHERE room_id=" + roomId;
+		
+		if (db.isAlreadyInDatabase(query) == false) {
+
+			db.insertIntoDatabase("INSERT INTO ROOMS (room_id, numberOfRegularSeats, numberOfLoveSeats, numberOfLogeSeats)"
+					+ " VALUES (" + roomId + "," + numberOfRegularSeats + "," + numberOfLoveSeats + "," + numberOfLogeSeats + ")");
+		}
+		
+		else System.out.println("Error: room already in database");
+	}
 }
