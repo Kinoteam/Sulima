@@ -2,60 +2,110 @@ package buchung;
 
 public class Seat {
 	private int seatNumber;
+	private int seatId;
+	private int roomNumber;
+	private SeatType seatType;
 	private boolean reserved;
-	private String firstName;
-	private String lastName;
-	
+
+
 	public Seat() {
 		seatNumber = 0;
+		roomNumber = 0;
 		reserved = false;
-		firstName= "";
-		lastName= "";
+		seatType=null;
 	}
-	
-	public Seat(int pSeatNumber) {
+
+
+	public Seat(SeatType pSeatType) {
+		seatNumber = 0;
+		roomNumber = 0;
+		reserved = false;
+		seatType=pSeatType;
+	}
+
+	public Seat(int pSeatNumber, SeatType pSeatType) {
 		seatNumber = pSeatNumber;
+		roomNumber = 0;
 		reserved = false;
-		firstName= "";
-		lastName= "";
+		seatType= pSeatType;
 	}
-	
-	public Seat(int pNumber, boolean pReserved, String pFirstName, String pLastName) {
-		seatNumber = pNumber;
+
+	public Seat(int pSeatNumber, Room room, boolean pReserved, SeatType pSeatType) {
+		seatNumber = pSeatNumber;
+		roomNumber = room.getRoomId();
 		reserved = pReserved;
-		firstName= pFirstName;
-		lastName= pLastName;
+		seatType= pSeatType;
 	}
-	
-	public void setResetSeat(int pNumber) {
-		seatNumber = pNumber;
+
+	public void resetSeat() {
 		reserved = false;
-		firstName= "";
-		lastName= "";
 	}
-	
-	public void setReservedSeat(String pFirstName, String pLastName) {
+
+	public void reserveSeat(String pFirstName, String pLastName) {
 		reserved = true;
-		firstName= pFirstName;
-		lastName= pLastName;
 	}
-	
+
 	public int getSeatNumber() {
 		return seatNumber;
 	}
-	
+
 	public boolean getReserved() {
 		return reserved;
 	}
-	
-	public String getFirstName() {
-		return firstName;
+
+
+	public String seatTypeToString() {
+		switch (this.seatType) {
+		case LOVESEAT:
+			return("LOVESEAT");
+
+		case REGULAR:
+			return("REGULAR");
+
+		case LOGE:
+			return("LOGE");
+
+		default:
+			return("Seat type undefined");
+		}
 	}
-	
-	public String getLastName() {
-		return lastName;
+
+
+	public void addSeatToRoom(Room room) {
+
+		switch (this.seatType) {
+		case LOVESEAT:
+			room.incrementNumberOfLoveSeats();
+			roomNumber = room.getRoomId();
+			break;
+
+		case REGULAR:
+			room.incrementNumberOfRegularSeats();
+			roomNumber = room.getRoomId();
+			break;
+
+		case LOGE:
+			room.incrementNumberOfLogeSeats();
+			roomNumber = room.getRoomId();
+			break;
+
+		default:
+			System.out.println("Please set the seat type before assigning the seat to a room");
+			break;
+		}
+
 	}
-	
+
+
+	public void saveSeat() {
+
+		Database db = new Database();
+		String query = "INSERT INTO SEATS (seat_number, room_id , seat_category, is_reserved)"
+				+ " VALUES (" + seatNumber + "," + roomNumber + ", '"+ seatTypeToString()+ "', '" +reserved  + "')";
+
+		db.insertIntoDatabase(query);
+
+	}
 }
 
 
