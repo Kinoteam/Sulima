@@ -13,7 +13,6 @@ class Database {
 	{
 		try {
 			connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/sulima" , "root", "zbi");
-			System.out.println("Connected");
 		}
 
 		catch (Exception dbError){
@@ -40,7 +39,14 @@ class Database {
 			dbError.printStackTrace();
 		}
 
-		try { connection.close(); } catch (SQLException ignore) {}
+		finally
+		{ 
+			try {
+				connection.close();
+				connection = null;
+				} 
+			catch (SQLException ignore) {}
+		}
 	}
 
 	public boolean isAlreadyInDatabase(String query) {
@@ -64,7 +70,14 @@ class Database {
 			dbError.printStackTrace();
 		}
 
-		//		try { connection.close(); } catch (SQLException ignore) {}
+		finally
+		{ 
+			try {
+				connection.close();
+				connection = null;
+				} 
+			catch (SQLException ignore) {}
+		}
 
 		return result;
 	}
@@ -83,6 +96,15 @@ class Database {
 
 		catch (Exception dbError){
 			dbError.printStackTrace();
+		}
+		
+		finally
+		{ 
+			try {
+				connection.close();
+				connection = null;
+				} 
+			catch (SQLException ignore) {}
 		}
 
 	}
@@ -108,6 +130,15 @@ class Database {
 		catch (Exception dbError){
 			dbError.printStackTrace();
 		}
+		
+		finally
+		{ 
+			try {
+				connection.close();
+				connection = null;
+				} 
+			catch (SQLException ignore) {}
+		}
 
 		return result;
 	}
@@ -131,7 +162,83 @@ class Database {
 		catch (Exception dbError){
 			dbError.printStackTrace();
 		}
+		
+		finally
+		{ 
+			try {
+				connection.close();
+				connection = null;
+				} 
+			catch (SQLException ignore) {}
+		}
+		return result;
+	}
 
+	public void fetchRoomsFromDatabase(Room[] rooms, int rowsCount) {
+
+		if (connection == null) {
+			connectToDatabase();
+		}
+
+		String query = "SELECT * FROM ROOMS";
+
+		try {
+			statement = connection.createStatement();
+			resultSet = statement.executeQuery(query);
+			if (resultSet.next())
+			{
+				for (int i=0; i<rowsCount; i++)
+				{
+					rooms[i] = new Room();
+					rooms[i].setRoomId(resultSet.getInt("room_id"));
+					rooms[i].setNumberOfSeats(resultSet.getInt("numberOfRegularSeats"), resultSet.getInt("numberOfLoveSeats"), resultSet.getInt("numberOfLogeSeats"));
+					resultSet.next();
+				}
+			}
+		}
+
+		catch (Exception dbError){
+			dbError.printStackTrace();
+		}
+		
+		finally
+		{ 
+			try {
+				connection.close();
+				connection = null;
+				} 
+			catch (SQLException ignore) {}
+		}
+	}
+
+	public int getIntFromDatabase(String query, String key) {
+		
+		int result = 0;
+		if (connection == null) {
+			connectToDatabase();
+		}
+
+		try {
+			statement = connection.createStatement();
+			resultSet = statement.executeQuery(query);
+			while (resultSet.next()) {
+				result = resultSet.getInt(key);
+			}
+		}
+
+		catch (Exception dbError){
+			dbError.printStackTrace();
+		}
+
+		finally
+		{ 
+			try {
+				connection.close();
+				connection = null;
+				} 
+			catch (SQLException ignore) {}
+		}
+		
 		return result;
 	}
 }

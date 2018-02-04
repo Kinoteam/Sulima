@@ -17,6 +17,22 @@ public class Room {
 		numberOfSeats = 0;
 	}
 
+	public Room(int pRoomId){
+
+		String query = "SELECT * FROM ROOMS WHERE room_id = " + pRoomId;
+		Database db = new Database();
+		if(!db.isAlreadyInDatabase(query)) {
+			roomId = pRoomId;
+			numberOfRegularSeats = 0;
+			numberOfLoveSeats = 0;
+			numberOfLogeSeats = 0;
+			numberOfSeats = 0;
+			this.saveRoom();
+		}
+		else System.out.println("Error: Room exists already");
+		
+	}
+
 	public Room(int pNumberOfRegularSeats, int pNumberOfLoveSeats, int pNumberOfLogeSeats){
 
 		numberOfRegularSeats = pNumberOfRegularSeats;
@@ -47,7 +63,9 @@ public class Room {
 	}
 
 	public void setRoomId(int pRoomId) {
+		
 		roomId = pRoomId;
+		
 	}
 
 	public void setNumberOfSeats(int pNumberOfRegularSeats, int pNumberOfLoveSeats, int pNumberOfLogeSeats) {
@@ -88,20 +106,22 @@ public class Room {
 		numberOfLogeSeats++;
 		numberOfSeats++;
 	}
-	
+
 	public void saveRoom() {
 
 		Database db = new Database();
 		String chkQuery = "SELECT * FROM ROOMS WHERE room_id=" + roomId;
-		
+
 		if (db.isAlreadyInDatabase(chkQuery) == false) {
-			
+
 			String saveQuery = "INSERT INTO ROOMS (room_id, numberOfRegularSeats, numberOfLoveSeats, numberOfLogeSeats)"
 					+ " VALUES (" + roomId + "," + numberOfRegularSeats + "," + numberOfLoveSeats + "," + numberOfLogeSeats + ")";
-			
+
 			db.insertIntoDatabase(saveQuery);
 		}
-		
+
 		else System.out.println("Error: room already in database");
 	}
+
+
 }
