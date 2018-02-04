@@ -91,7 +91,7 @@ class Database {
 		try {
 			statement = connection.createStatement();
 			statement.executeUpdate(query);
-			System.out.println("Successfully inserted to Database");
+//			System.out.println("Successfully inserted to Database");
 		}
 
 		catch (Exception dbError){
@@ -107,40 +107,6 @@ class Database {
 			catch (SQLException ignore) {}
 		}
 
-	}
-
-	public int getCountFromDatabase(String database) {
-
-		if (connection == null) {
-			connectToDatabase();
-		}
-		int result = 0;
-		String query = "SELECT COUNT(*) FROM " + database;
-
-		try {
-			statement = connection.createStatement();
-			resultSet = statement.executeQuery(query);
-			if (resultSet.next()) {
-				result = (resultSet.getInt("COUNT(*)"));
-			}
-
-
-		}
-
-		catch (Exception dbError){
-			dbError.printStackTrace();
-		}
-		
-		finally
-		{ 
-			try {
-				connection.close();
-				connection = null;
-				} 
-			catch (SQLException ignore) {}
-		}
-
-		return result;
 	}
 
 	public int getCountWithCondition(String database, String column, String value) {
@@ -191,7 +157,8 @@ class Database {
 				{
 					rooms[i] = new Room();
 					rooms[i].setRoomId(resultSet.getInt("room_id"));
-					rooms[i].setNumberOfSeats(resultSet.getInt("numberOfRegularSeats"), resultSet.getInt("numberOfLoveSeats"), resultSet.getInt("numberOfLogeSeats"));
+					rooms[i].setNumberOfSeats(resultSet.getInt("numberOfRegularSeats"),
+							resultSet.getInt("numberOfLoveSeats"), resultSet.getInt("numberOfLogeSeats"));
 					resultSet.next();
 				}
 			}
@@ -211,6 +178,44 @@ class Database {
 		}
 	}
 
+	public void fetchSeatsFromDatabase(int roomId, Seat[] seats, int rowsCount) {
+		
+		if (connection == null) {
+			connectToDatabase();
+		}
+
+		String query = "SELECT * FROM SEATS WHERE room_id = " + roomId;
+
+		try {
+			statement = connection.createStatement();
+			resultSet = statement.executeQuery(query);
+			if (resultSet.next())
+			{
+				for (int i=0; i<rowsCount; i++)
+				{
+					seats[i] = new Seat();
+					seats[i].setSeat(resultSet.getInt("seat_id") ,  resultSet.getInt("seat_number") , resultSet.getInt("room_id") ,
+							resultSet.getString("seat_category") , resultSet.getBoolean("is_reserved"));
+					resultSet.next();
+				}
+			}
+		}
+
+		catch (Exception dbError){
+			dbError.printStackTrace();
+		}
+		
+		finally
+		{ 
+			try {
+				connection.close();
+				connection = null;
+				} 
+			catch (SQLException ignore) {}
+		}
+	}
+	
+	
 	public int getIntFromDatabase(String query, String key) {
 		
 		int result = 0;
@@ -221,7 +226,7 @@ class Database {
 		try {
 			statement = connection.createStatement();
 			resultSet = statement.executeQuery(query);
-			while (resultSet.next()) {
+			if (resultSet.next()) {
 				result = resultSet.getInt(key);
 			}
 		}
@@ -242,4 +247,38 @@ class Database {
 		return result;
 	}
 }
+
+//public int getCountFromDatabase(String database) {
+//
+//	if (connection == null) {
+//		connectToDatabase();
+//	}
+//	int result = 0;
+//	String query = "SELECT COUNT(*) FROM " + database;
+//
+//	try {
+//		statement = connection.createStatement();
+//		resultSet = statement.executeQuery(query);
+//		if (resultSet.next()) {
+//			result = (resultSet.getInt("COUNT(*)"));
+//		}
+//
+//
+//	}
+//
+//	catch (Exception dbError){
+//		dbError.printStackTrace();
+//	}
+//	
+//	finally
+//	{ 
+//		try {
+//			connection.close();
+//			connection = null;
+//			} 
+//		catch (SQLException ignore) {}
+//	}
+//
+//	return result;
+//}
 

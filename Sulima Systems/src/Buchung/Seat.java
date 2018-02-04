@@ -48,6 +48,18 @@ public class Seat {
 	public int getSeatNumber() {
 		return seatNumber;
 	}
+	
+	public void setSeat(int seatId, int seatNumber, int roomNumber, String stringSeatType, boolean reserved) {
+		this.seatId = seatId;
+		this.seatNumber = seatNumber;
+		this.roomNumber = roomNumber;
+		this.seatType = seatTypeFromString(stringSeatType);
+		this.reserved = reserved;
+	}
+	
+	public void setSeatNumber(int pSeatNumber) {
+		seatNumber= pSeatNumber;
+	}
 
 	public boolean getReserved() {
 		return reserved;
@@ -69,24 +81,39 @@ public class Seat {
 			return("Seat type undefined");
 		}
 	}
+	
+	private SeatType seatTypeFromString(String stringSeatType) {
+		
+		SeatType seatType = SeatType.REGULAR;
+		
+		switch (stringSeatType) {
+		case "LOVESEAT":
+			seatType = SeatType.LOVESEAT;
+			return seatType;
+
+		case "LOGE":
+			seatType = SeatType.LOGE;
+			return seatType;
+
+		default:
+			return seatType;
+		}
+	}
 
 
-	public void addSeatToRoom(Room room) {
+	public void setRoomIdOfSeat(int roomId) {
 
 		switch (this.seatType) {
 		case LOVESEAT:
-			room.incrementNumberOfLoveSeats();
-			roomNumber = room.getRoomId();
+			roomNumber = roomId;
 			break;
 
 		case REGULAR:
-			room.incrementNumberOfRegularSeats();
-			roomNumber = room.getRoomId();
+			roomNumber = roomId;
 			break;
 
 		case LOGE:
-			room.incrementNumberOfLogeSeats();
-			roomNumber = room.getRoomId();
+			roomNumber = roomId;
 			break;
 
 		default:

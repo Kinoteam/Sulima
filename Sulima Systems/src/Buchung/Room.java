@@ -7,6 +7,7 @@ public class Room {
 	private int numberOfRegularSeats;
 	private int numberOfLoveSeats;
 	private int numberOfLogeSeats;
+	Seat[] roomSeats;
 
 
 	public Room(){
@@ -15,6 +16,7 @@ public class Room {
 		numberOfLoveSeats = 0;
 		numberOfLogeSeats = 0;
 		numberOfSeats = 0;
+		roomSeats = null;
 	}
 
 	public Room(int pRoomId){
@@ -27,10 +29,10 @@ public class Room {
 			numberOfLoveSeats = 0;
 			numberOfLogeSeats = 0;
 			numberOfSeats = 0;
-			this.saveRoom();
+			roomSeats = null;
 		}
 		else System.out.println("Error: Room exists already");
-		
+
 	}
 
 	public Room(int pNumberOfRegularSeats, int pNumberOfLoveSeats, int pNumberOfLogeSeats){
@@ -63,9 +65,7 @@ public class Room {
 	}
 
 	public void setRoomId(int pRoomId) {
-		
 		roomId = pRoomId;
-		
 	}
 
 	public void setNumberOfSeats(int pNumberOfRegularSeats, int pNumberOfLoveSeats, int pNumberOfLogeSeats) {
@@ -123,5 +123,69 @@ public class Room {
 		else System.out.println("Error: room already in database");
 	}
 
+	public void loadSeats() {
+		
+		Seat[] seats = null;
+		Database db = new Database();
+		String query = "SELECT COUNT(*) FROM SEATS WHERE room_id = " + roomId;
+		String key = "COUNT(*)";
+		int rowsCount = db.getIntFromDatabase(query, key);
 
+		if (rowsCount > 0) {
+
+			seats= new Seat[rowsCount];
+			db.fetchSeatsFromDatabase( roomId ,seats, rowsCount);
+			System.out.println("Seats loaded");
+		}
+
+		else System.out.println("No seats in this room");
+		
+		db = null;
+		roomSeats = seats;
+	}
+	
+	public void addSeatsToRoom(int numberOfSeats, String stringSeatType) {
+
+		SeatType seatType;
+
+		switch (stringSeatType) {
+
+		case "regular":
+			seatType = SeatType.REGULAR;
+			break;
+
+		case "loge":
+			seatType = SeatType.LOGE;
+			break;
+
+		case "loveseat":
+			seatType = SeatType.LOVESEAT;
+			break;
+
+		default:
+			seatType = SeatType.REGULAR;
+			break;
+		}
+
+		int initialSeatNumber = getSeatCount();
+		Seat[] seats= new Seat[numberOfSeats];
+		for (int i= 0; i < numberOfSeats; i++)
+		{
+			seats[i] = new Seat(initialSeatNumber + 1 + i, seatType);
+			seats[i].setRoomIdOfSeat(this.roomId);
+			seats[i].saveSeat();
+		}
+		
+		this.roomSeats=seats;
+	}
+
+	public int getSeatCount(){
+		int result = 0;
+		String key ="seat_number";
+		String query = "SELECT * FROM SEATS WHERE room_id =" + this.roomId + " ORDER by seat_number DESC limit 1  ";
+		Database db = new Database();
+		result = db.getIntFromDatabase(query, key);
+		db = null;
+		return result;
+	}
 }
