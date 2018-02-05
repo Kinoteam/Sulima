@@ -90,8 +90,9 @@ class Database {
 
 		try {
 			statement = connection.createStatement();
+			System.out.println(query);
 			statement.executeUpdate(query);
-//			System.out.println("Successfully inserted to Database");
+
 		}
 
 		catch (Exception dbError){
@@ -109,6 +110,32 @@ class Database {
 
 	}
 
+	public void deleteRowFromDatabase(String query) {
+		if (connection == null) {
+			connectToDatabase();
+		}
+
+		try {
+			System.out.println(query);
+			statement = connection.createStatement();
+			statement.executeUpdate(query);
+		}
+
+		catch (Exception dbError){
+			dbError.printStackTrace();
+		}
+		
+		finally
+		{ 
+			try {
+				connection.close();
+				connection = null;
+				} 
+			catch (SQLException ignore) {}
+		}
+
+	}
+	
 	public int getCountWithCondition(String database, String column, String value) {
 
 		if (connection == null) {
@@ -192,7 +219,7 @@ class Database {
 				for (int i=0; i<rowsCount; i++)
 				{
 					seats[i] = new Seat();
-					seats[i].setSeat(resultSet.getInt("seat_id") ,  resultSet.getInt("seat_number") , resultSet.getInt("room_id") ,
+					seats[i].setSeat(resultSet.getInt("seat_number") , resultSet.getInt("room_id") ,
 							resultSet.getString("seat_category") , resultSet.getBoolean("is_reserved"));
 					resultSet.next();
 				}
@@ -212,8 +239,7 @@ class Database {
 			catch (SQLException ignore) {}
 		}
 	}
-	
-	
+		
 	public int getIntFromDatabase(String query, String key) {
 		
 		int result = 0;

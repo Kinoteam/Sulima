@@ -7,7 +7,7 @@ public class Room {
 	private int numberOfRegularSeats;
 	private int numberOfLoveSeats;
 	private int numberOfLogeSeats;
-	Seat[] roomSeats; // Array seats belonging to this room
+	private Seat[] roomSeats; // Array seats belonging to this room
 
 
 	public Room(){
@@ -71,21 +71,23 @@ public class Room {
 			{
 				addSeatsToRoom(numberOfRegularSeats, SeatType.REGULAR);
 				this.numberOfRegularSeats = numberOfRegularSeats;
+				numberOfSeats += numberOfRegularSeats;
 			}
 
 			if (numberOfLoveSeats > 0)
 			{
 				addSeatsToRoom(numberOfLoveSeats, SeatType.LOVESEAT);
 				this.numberOfLoveSeats= numberOfLoveSeats;
+				numberOfSeats += numberOfLoveSeats;
 			}
 
 			if (numberOfLogeSeats > 0)
 			{
 				addSeatsToRoom(numberOfLogeSeats, SeatType.LOGE);
 				this.numberOfLogeSeats= numberOfLogeSeats;
+				numberOfSeats += numberOfLogeSeats;
 			}
 
-			numberOfSeats = numberOfRegularSeats + numberOfLoveSeats + numberOfLogeSeats;
 		}// if roomId is unique
 
 		else System.out.println("Error: Room exists already");
@@ -195,28 +197,23 @@ public class Room {
 			seats= new Seat[rowsCount];
 			db.fetchSeatsFromDatabase( roomId ,seats, rowsCount);
 			System.out.println("Seats loaded");
+			roomSeats = seats;
+			setNumberOfSeats();
 		}
 
 		else System.out.println("No seats in this room");
 
-		roomSeats = seats;
-		setNumberOfSeats();
 		db = null; query = null; key=null; seats=null; /*clearing memory*/
 
 	}// loadSeats()
 
 	public void addSeatsToRoom(int numberOfSeats, SeatType seatType) {
 
-		int initialSeatNumber = 0;
-		if (roomSeats != null) 
-		{
-			initialSeatNumber = this.getSeatCount();
-		}
 		Seat[] seats= new Seat[numberOfSeats];
 		for (int i= 0; i < numberOfSeats; i++)
 		{
 			// create a new instance of Seat in the Array seats
-			seats[i] = new Seat(initialSeatNumber + 1 + i, seatType);
+			seats[i] = new Seat(this.numberOfSeats + 1 + i, seatType);
 
 			// set the RoomId variable IN the Seat instance to that of the Room it belongs to.
 			seats[i].setRoomIdOfSeat(this.roomId);
@@ -224,7 +221,7 @@ public class Room {
 
 		}// for loop
 
-		roomSeats = seats;
+		this.roomSeats = seats;
 		seats=null; /*clearing memory*/
 	}// Method addSeatsToRoom()
 
@@ -235,17 +232,27 @@ public class Room {
 		}
 		else return 0;
 	}// Method getSeatCount
+	
+	public void removeSeatsFromRoom(int lowerBoundary, int upperBoundary) {
+		/*this Function is meant to remove the seats that have their
+		 *  seatNumber between the two boundaries, boundaries included.
+		 *  having the same number N as boundaries means the seat with the number N
+		 *  will be removed
+		 */
+		
+		if (upperBoundary>= lowerBoundary && lowerBoundary>0 && upperBoundary <= this.numberOfSeats )
+		{
+			for (int i = 0; i<this.numberOfSeats; i++) {
+				if(this.roomSeats[i].getSeatNumber()>= lowerBoundary && this.roomSeats[i].getSeatNumber()<= upperBoundary) {
+					this.roomSeats[i].deleteSeat();
+				}
+				else if(this.roomSeats[i].getSeatNumber()> upperBoundary) { 
+					this.roomSeats[i].updateSeat((upperBoundary+1-lowerBoundary));
+				}
+				
+				
+			}// for loop	
+		}// initial if condition
+		else System.out.println("Error: Delete arguments out of boundaries");
+	}// Method removeSeatsFromRoom()
 }// Class Room
-
-
-//public int getSeatCountFromDatabase(){
-//int result = 0;
-//String key ="seat_number";
-//String query = "SELECT * FROM SEATS WHERE room_id =" + this.roomId + " ORDER by seat_number DESC limit 1  ";
-//Database db = new Database();
-//result = db.getIntFromDatabase(query, key);
-//
-//db = null; query = null; key=null; /*clearing memory*/
-//return result;
-//
-//}// Method getSeatCountFromDatabase()

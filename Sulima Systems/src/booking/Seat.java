@@ -1,14 +1,13 @@
 package booking;
 
-public class Seat {
+ class Seat {
 	private int seatNumber;
-	private int seatId;
 	private int roomNumber;
 	private SeatType seatType;
 	private boolean reserved;
 
 
-	public Seat() {
+	 Seat() {
 		seatNumber = 0;
 		roomNumber = 0;
 		reserved = false;
@@ -16,60 +15,59 @@ public class Seat {
 	}
 
 
-	public Seat(SeatType pSeatType) {
+	 Seat(SeatType pSeatType) {
 		seatNumber = 0;
 		roomNumber = 0;
 		reserved = false;
 		seatType=pSeatType;
 	}
 
-	public Seat(int pSeatNumber, SeatType pSeatType) {
+	 Seat(int pSeatNumber, SeatType pSeatType) {
 		seatNumber = pSeatNumber;
 		roomNumber = 0;
 		reserved = false;
 		seatType= pSeatType;
 	}
 
-	public Seat(int pSeatNumber, Room room, boolean pReserved, SeatType pSeatType) {
+	 Seat(int pSeatNumber, Room room, boolean pReserved, SeatType pSeatType) {
 		seatNumber = pSeatNumber;
 		roomNumber = room.getRoomId();
 		reserved = pReserved;
 		seatType= pSeatType;
 	}
 
-	public void resetSeat() {
+	 void resetSeat() {
 		reserved = false;
 	}
 
-	public void reserveSeat(String pFirstName, String pLastName) {
+	 void reserveSeat(String pFirstName, String pLastName) {
 		reserved = true;
 	}
 
-	public int getSeatNumber() {
+	 int getSeatNumber() {
 		return seatNumber;
 	}
 	
-	public void setSeat(int seatId, int seatNumber, int roomNumber, String stringSeatType, boolean reserved) {
-		this.seatId = seatId;
+	 void setSeat(int seatNumber, int roomNumber, String stringSeatType, boolean reserved) {
 		this.seatNumber = seatNumber;
 		this.roomNumber = roomNumber;
 		this.seatType = seatTypeFromString(stringSeatType);
 		this.reserved = reserved;
 	}
 	
-	public void setSeatNumber(int pSeatNumber) {
+	 void setSeatNumber(int pSeatNumber) {
 		seatNumber= pSeatNumber;
 	}
 
-	public boolean getReserved() {
+	 boolean getReserved() {
 		return reserved;
 	}
 
-	public SeatType getSeatType() {
+	 SeatType getSeatType() {
 		return(this.seatType);
 	}
 
-	public String seatTypeToString() {
+    String seatTypeToString() {
 		switch (this.seatType) {
 		case LOVESEAT:
 			return("LOVESEAT");
@@ -104,7 +102,7 @@ public class Seat {
 	}
 
 
-	public void setRoomIdOfSeat(int roomId) {
+	void setRoomIdOfSeat(int roomId) {
 
 		switch (this.seatType) {
 		case LOVESEAT:
@@ -127,14 +125,31 @@ public class Seat {
 	}
 
 
-	public void saveSeat() {
+	void saveSeat() {
 
 		Database db = new Database();
 		String query = "INSERT INTO SEATS (seat_number, room_id , seat_category, is_reserved)"
 				+ " VALUES (" + seatNumber + "," + roomNumber + ", '"+ seatTypeToString()+ "', '" +reserved  + "')";
 
 		db.insertIntoDatabase(query);
+	}
+	
+	void deleteSeat() {
+		Database db = new Database();
+		String query = "DELETE FROM seats WHERE seat_number = " + this.seatNumber + " AND room_id= " + this.roomNumber;
 
+		db.deleteRowFromDatabase(query);
+		db = null;
+	}
+	
+	void updateSeat(int shift) {
+		
+		Database db = new Database();
+		String query = "UPDATE SEATS SET seat_number = " + (this.seatNumber-shift) +
+				" WHERE seat_number = " + this.seatNumber + " AND room_id = " + this.roomNumber;
+
+		db.insertIntoDatabase(query);
+		db = null;
 	}
 }
 
