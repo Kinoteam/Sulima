@@ -1,4 +1,4 @@
-package buchung;
+package booking;
 
 import java.sql.*;
 
@@ -157,8 +157,6 @@ class Database {
 				{
 					rooms[i] = new Room();
 					rooms[i].setRoomId(resultSet.getInt("room_id"));
-					rooms[i].setNumberOfSeats(resultSet.getInt("numberOfRegularSeats"),
-							resultSet.getInt("numberOfLoveSeats"), resultSet.getInt("numberOfLogeSeats"));
 					resultSet.next();
 				}
 			}

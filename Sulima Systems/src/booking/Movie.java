@@ -1,4 +1,4 @@
-package buchung;
+package booking;
 
 public class Movie {
 	
