@@ -4,7 +4,8 @@ Kinosoftware
 # version 0.12
 + added delete seat and delete room functions
 + added setRoomId function
-!To do:
+
+! To do:
 - add setReserved in class Seat
 - work on class Movie
          
