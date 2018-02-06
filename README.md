@@ -5,8 +5,8 @@ Kinosoftware
 + added delete seat and delete room functions
 + added setRoomId function
 
-! To Do: add setReserved in class Seat
-         work on class Movie
+- add setReserved in class Seat
+- work on class Movie
          
 # version 0.10
 + Seats can no longer exist outside a room
