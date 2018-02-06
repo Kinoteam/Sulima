@@ -7,7 +7,7 @@ Kinosoftware
 
 ! To do:
 - add setReserved in class Seat
-- work on class Movie
+- work on class Session
          
 # version 0.10
 + Seats can no longer exist outside a room
