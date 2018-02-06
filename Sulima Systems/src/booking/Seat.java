@@ -101,27 +101,28 @@ package booking;
 		}
 	}
 
-
 	void setRoomIdOfSeat(int roomId) {
 
-		switch (this.seatType) {
-		case LOVESEAT:
-			roomNumber = roomId;
-			break;
+		roomNumber = roomId;
+	}
+	
+	void setRoomIdToNull() {
 
-		case REGULAR:
-			roomNumber = roomId;
-			break;
+		Database db = new Database();
+		String query = "UPDATE SEATS SET room_id = NULL WHERE seat_number = " + this.seatNumber + " AND room_id = " + this.roomNumber;
 
-		case LOGE:
-			roomNumber = roomId;
-			break;
+		db.updateDatabase(query);
+		db = null;
 
-		default:
-			System.out.println("Please set the seat type before assigning the seat to a room");
-			break;
-		}
+	}
+	
+	void updateRoomIdOfSeat(int roomId){
+		
+		Database db = new Database();
+		String query = "UPDATE SEATS SET room_id = " + roomId+ " WHERE room_id is NULL";
 
+		db.updateDatabase(query);
+		db = null;
 	}
 
 
@@ -131,14 +132,14 @@ package booking;
 		String query = "INSERT INTO SEATS (seat_number, room_id , seat_category, is_reserved)"
 				+ " VALUES (" + seatNumber + "," + roomNumber + ", '"+ seatTypeToString()+ "', '" +reserved  + "')";
 
-		db.insertIntoDatabase(query);
+		db.updateDatabase(query);
 	}
 	
 	void deleteSeat() {
 		Database db = new Database();
 		String query = "DELETE FROM seats WHERE seat_number = " + this.seatNumber + " AND room_id= " + this.roomNumber;
 
-		db.deleteRowFromDatabase(query);
+		db.updateDatabase(query);
 		db = null;
 	}
 	
@@ -148,7 +149,7 @@ package booking;
 		String query = "UPDATE SEATS SET seat_number = " + (this.seatNumber-shift) +
 				" WHERE seat_number = " + this.seatNumber + " AND room_id = " + this.roomNumber;
 
-		db.insertIntoDatabase(query);
+		db.updateDatabase(query);
 		db = null;
 	}
 }

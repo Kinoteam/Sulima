@@ -21,34 +21,6 @@ class Database {
 
 	}
 
-	public void queryToDatabase(String query) {
-
-		if (connection == null) {
-			connectToDatabase();
-		}
-
-		try {
-			statement = connection.createStatement();
-			resultSet = statement.executeQuery(query);
-			while (resultSet.next()) {
-				System.out.println(resultSet.getString("date") + ", " + resultSet.getString("hour") + "h, in room" + resultSet.getString("room") + "."  );
-			}
-		}
-
-		catch (Exception dbError){
-			dbError.printStackTrace();
-		}
-
-		finally
-		{ 
-			try {
-				connection.close();
-				connection = null;
-				} 
-			catch (SQLException ignore) {}
-		}
-	}
-
 	public boolean isAlreadyInDatabase(String query) {
 
 		if (connection == null) {
@@ -110,7 +82,7 @@ class Database {
 
 	}
 
-	public void deleteRowFromDatabase(String query) {
+	public void updateDatabase(String query) {
 		if (connection == null) {
 			connectToDatabase();
 		}
@@ -183,7 +155,7 @@ class Database {
 				for (int i=0; i<rowsCount; i++)
 				{
 					rooms[i] = new Room();
-					rooms[i].setRoomId(resultSet.getInt("room_id"));
+					rooms[i].updateRoomId(resultSet.getInt("room_id"));
 					resultSet.next();
 				}
 			}
@@ -271,38 +243,3 @@ class Database {
 		return result;
 	}
 }
-
-//public int getCountFromDatabase(String database) {
-//
-//	if (connection == null) {
-//		connectToDatabase();
-//	}
-//	int result = 0;
-//	String query = "SELECT COUNT(*) FROM " + database;
-//
-//	try {
-//		statement = connection.createStatement();
-//		resultSet = statement.executeQuery(query);
-//		if (resultSet.next()) {
-//			result = (resultSet.getInt("COUNT(*)"));
-//		}
-//
-//
-//	}
-//
-//	catch (Exception dbError){
-//		dbError.printStackTrace();
-//	}
-//	
-//	finally
-//	{ 
-//		try {
-//			connection.close();
-//			connection = null;
-//			} 
-//		catch (SQLException ignore) {}
-//	}
-//
-//	return result;
-//}
-
