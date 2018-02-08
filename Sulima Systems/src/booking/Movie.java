@@ -11,9 +11,14 @@ public class Movie {
 		movieDuration = 0;
 	}
 	
-	public Movie(String pMovieName, int pMovieDuration) {
-		movieName = pMovieName;
-		movieDuration = pMovieDuration;
+	public Movie(int movie_id, String movieName) {
+		this.movie_id = movie_id;
+		this.movieName = movieName;
+		this.movieDuration = 120;
+	}
+	
+	public int getMovieId() {
+		return this.movie_id;
 	}
 	
 	public String getMovieName() {
@@ -24,12 +29,28 @@ public class Movie {
 		return this.movieDuration;
 	}
 	
-	public void setMovieName(String pMovieName) {
-		this.movieName = pMovieName;
+	public void setMovie(int movie_id, String movieName) {
+		this.movie_id = movie_id;
+		this.movieName = movieName;
 	}
 	
-	public void setMovieDuration(int pMovieDuration) {
-		this.movieDuration = pMovieDuration;
+	public void setMovieName(String movieName) {
+		this.movieName = movieName;
+	}
+	
+	public void setMovieDuration(int movieDuration) {
+		this.movieDuration = movieDuration;
+	}
+	
+	public void saveMovie() {
+		Database db = new Database();
+		db.insertIntoDatabase("INSERT INTO movies (movie_id, movie_name)"
+				+ " VALUES (" + this.movie_id+ " , '"+ this.movieName+"')");
+	}
+	
+	public String toString() {
+		String string = "Id: "+this.movie_id+ " , "+ this.movieName;
+		return string;
 	}
 	
 	

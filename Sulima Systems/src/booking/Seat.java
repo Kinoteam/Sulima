@@ -1,67 +1,57 @@
 package booking;
 
- class Seat {
+ class Seat implements Cloneable{
 	private int seatNumber;
-	private int roomNumber;
+	private int room_id;
 	private SeatType seatType;
-	private boolean reserved;
 
 
 	 Seat() {
 		seatNumber = 0;
-		roomNumber = 0;
-		reserved = false;
+		room_id = 0;
 		seatType=null;
 	}
 
 
 	 Seat(SeatType pSeatType) {
 		seatNumber = 0;
-		roomNumber = 0;
-		reserved = false;
+		room_id = 0;
 		seatType=pSeatType;
 	}
 
 	 Seat(int pSeatNumber, SeatType pSeatType) {
 		seatNumber = pSeatNumber;
-		roomNumber = 0;
-		reserved = false;
+		room_id = 0;
 		seatType= pSeatType;
 	}
 
-	 Seat(int pSeatNumber, Room room, boolean pReserved, SeatType pSeatType) {
+	 Seat(int pSeatNumber, Room room, SeatType pSeatType) {
 		seatNumber = pSeatNumber;
-		roomNumber = room.getRoomId();
-		reserved = pReserved;
+		room_id = room.getRoomId();
 		seatType= pSeatType;
 	}
-
-	 void resetSeat() {
-		reserved = false;
-	}
-
-	 void reserveSeat(String pFirstName, String pLastName) {
-		reserved = true;
-	}
+	 
+	 Seat(int seatNumber, int room_id, SeatType seatType ){
+		 this.seatNumber= seatNumber;
+		 this.room_id= room_id;
+		 this.seatType = seatType;
+		 
+	 }
 
 	 int getSeatNumber() {
 		return seatNumber;
 	}
 	
-	 void setSeat(int seatNumber, int roomNumber, String stringSeatType, boolean reserved) {
+	 void setSeat(int seatNumber, int room_id, String stringSeatType) {
 		this.seatNumber = seatNumber;
-		this.roomNumber = roomNumber;
+		this.room_id = room_id;
 		this.seatType = seatTypeFromString(stringSeatType);
-		this.reserved = reserved;
 	}
 	
 	 void setSeatNumber(int pSeatNumber) {
 		seatNumber= pSeatNumber;
 	}
 
-	 boolean getReserved() {
-		return reserved;
-	}
 
 	 SeatType getSeatType() {
 		return(this.seatType);
@@ -102,14 +92,13 @@ package booking;
 	}
 
 	void setRoomIdOfSeat(int roomId) {
-
-		roomNumber = roomId;
+		room_id = roomId;
 	}
 	
 	void setRoomIdToNull() {
 
 		Database db = new Database();
-		String query = "UPDATE SEATS SET room_id = NULL WHERE seat_number = " + this.seatNumber + " AND room_id = " + this.roomNumber;
+		String query = "UPDATE SEATS SET room_id = NULL WHERE seat_number = " + this.seatNumber + " AND room_id = " + this.room_id;
 
 		db.updateDatabase(query);
 		db = null;
@@ -129,15 +118,15 @@ package booking;
 	void saveSeat() {
 
 		Database db = new Database();
-		String query = "INSERT INTO SEATS (seat_number, room_id , seat_category, is_reserved)"
-				+ " VALUES (" + seatNumber + "," + roomNumber + ", '"+ seatTypeToString()+ "', '" +reserved  + "')";
+		String query = "INSERT INTO SEATS (seat_number, room_id , seat_category)"
+				+ " VALUES (" + seatNumber + "," + room_id + ", '"+ seatTypeToString()+ "')";
 
 		db.updateDatabase(query);
 	}
 	
 	void deleteSeat() {
 		Database db = new Database();
-		String query = "DELETE FROM seats WHERE seat_number = " + this.seatNumber + " AND room_id= " + this.roomNumber;
+		String query = "DELETE FROM seats WHERE seat_number = " + this.seatNumber + " AND room_id= " + this.room_id;
 
 		db.updateDatabase(query);
 		db = null;
@@ -147,10 +136,16 @@ package booking;
 		
 		Database db = new Database();
 		String query = "UPDATE SEATS SET seat_number = " + (this.seatNumber-shift) +
-				" WHERE seat_number = " + this.seatNumber + " AND room_id = " + this.roomNumber;
+				" WHERE seat_number = " + this.seatNumber + " AND room_id = " + this.room_id;
 
 		db.updateDatabase(query);
 		db = null;
+	}
+	
+	public String toString() {
+
+		String string =  "Seat n: " + this.seatNumber + " Type: " + this.seatTypeToString();
+		return string;
 	}
 }
 

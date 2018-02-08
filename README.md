@@ -1,6 +1,16 @@
 # Sulima
 Kinosoftware
 
+# version 0.20
++ added Class Reservation
++ seat booking (almost) functional
++ moved some functions from the Main Class to Reservation
++ deleted some unnecessary columns from the database
+
+! To do:
+- booking completely functional
+- a mechanism to archive old sessions
+
 # version 0.12
 + added delete seat and delete room functions
 + added setRoomId function
