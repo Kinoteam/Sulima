@@ -11,13 +11,13 @@ public class Session implements Cloneable{
 
 	private int session_id;
 	private Date time;
-	private int roomId;
-	private int movieId;
+	private int room_id;
+	private int movie_id;
 
 	public Session() {
 		time = new Date();
-		roomId = 0;
-		movieId = 0;
+		room_id = 0;
+		movie_id = 0;
 		//		SimpleDateFormat simpleDate = new SimpleDateFormat("MM-dd HH:mm");
 		//		Date currentTime = simpleDate.parse("2012-04-19 20:51:06");
 		//		roomId = 0;
@@ -35,7 +35,7 @@ public class Session implements Cloneable{
 		}
 	}
 
-	public void set(int session_id, Date date, int roomId, int movieId) {
+	public void set(int session_id, Date date, int room_id, int movie_id) {
 		this.session_id = session_id;
 		this.time = date;
 		//		try {
@@ -44,8 +44,8 @@ public class Session implements Cloneable{
 		//			// TODO Auto-generated catch block
 		//			e.printStackTrace();
 		//		}
-		this.roomId = roomId;
-		this.movieId= movieId;
+		this.room_id = room_id;
+		this.movie_id= movie_id;
 	}
 
 	public void setDateManually() {
@@ -72,6 +72,10 @@ public class Session implements Cloneable{
 	public int getSessionId() {
 		return this.session_id;
 	}
+	
+	public int getRoomId() {
+		return this.room_id;
+	}
 
 	public void saveToDatabase() {
 		Database db = new Database();
@@ -82,7 +86,7 @@ public class Session implements Cloneable{
 
 	public String toString() {
 		String string;
-		string = "Session: "+ this.session_id + ", Movie: " +this.movieId+ ", Room: "+this.roomId+", time: "+Global.userdf.format(this.time);
+		string = "Session: "+ this.session_id + ", Movie: " +this.movie_id+ ", Room: "+this.room_id+", time: "+Global.userdf.format(this.time);
 		return string;
 	}
 

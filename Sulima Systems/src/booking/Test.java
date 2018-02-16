@@ -7,7 +7,9 @@ public class Test {
 
 
 		Reservation res = new Reservation();
+		while (true){
 		res.showMovies();
+		}
 	}
 	
 	public static Room[] loadRooms() {

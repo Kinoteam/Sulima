@@ -62,7 +62,6 @@ class Database {
 
 		try {
 			statement = connection.createStatement();
-			System.out.println(query);
 			statement.executeUpdate(query);
 
 		}
@@ -88,7 +87,6 @@ class Database {
 		}
 
 		try {
-			System.out.println(query);
 			statement = connection.createStatement();
 			statement.executeUpdate(query);
 		}
@@ -138,7 +136,7 @@ class Database {
 		}
 		return result;
 	}
-	
+
 	public void fetchMoviesFromDatabase(Movie[] movies, int rowsCount) {
 
 		if (connection == null) {
@@ -301,7 +299,7 @@ class Database {
 				for (int i=0; i<rowsCount; i++)
 				{
 					seats[i] = new Seat();
-					seats[i].setSeat(resultSet.getInt("seat_number") , resultSet.getInt("room_id") ,
+					seats[i].setSeat(resultSet.getInt("seat_id"), resultSet.getInt("seat_number") , resultSet.getInt("room_id") ,
 							resultSet.getString("seat_category"));
 					resultSet.next();
 				}
@@ -339,7 +337,7 @@ class Database {
 				for (int i=0; i<rowsCount; i++)
 				{
 					seats[i] = new Seat();
-					seats[i].setSeat(resultSet.getInt("seat_number") , resultSet.getInt("room_id") ,
+					seats[i].setSeat(resultSet.getInt("seat_id"), resultSet.getInt("seat_number") , resultSet.getInt("room_id") ,
 							resultSet.getString("seat_category"));
 					resultSet.next();
 				}
@@ -359,7 +357,6 @@ class Database {
 			catch (SQLException ignore) {}
 		}
 	}
-
 
 	public int getIntFromDatabase(String query, String key) {
 
@@ -391,4 +388,40 @@ class Database {
 
 		return result;
 	}
+
+	public void fetchReservedSeats(int[] array, int rowsToSubstract, int session_id) {
+		if (connection == null) {
+			connectToDatabase();
+		}
+
+		String query = "SELECT * FROM RESERVATIONS where session_id = " + session_id;
+
+		try {
+			statement = connection.createStatement();
+			resultSet = statement.executeQuery(query);
+			if (resultSet.next())
+			{
+				for (int i=0; i<rowsToSubstract; i++)
+				{
+					array[i] = resultSet.getInt("seat_id");
+					resultSet.next();
+				}
+			}
+		}
+
+		catch (Exception dbError){
+			dbError.printStackTrace();
+		}
+
+		finally
+		{ 
+			try {
+				connection.close();
+				connection = null;
+			} 
+			catch (SQLException ignore) {}
+		}
+	}
 }
+
+
