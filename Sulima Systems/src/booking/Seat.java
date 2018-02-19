@@ -1,25 +1,18 @@
 package booking;
 
-class Seat{
+import core.Database;
+
+public class Seat{
 	private int seat_id;
 	private int seatNumber;
 	private int room_id;
 	private SeatType seatType;
-
-
-	Seat() {
+	
+	public Seat() {
 
 		seatNumber = 0;
 		room_id = 0;
 		seatType=null;
-	}
-
-
-	Seat(SeatType pSeatType) {
-
-		seatNumber = 0;
-		room_id = 0;
-		seatType=pSeatType;
 	}
 
 	Seat(int pSeatNumber, SeatType pSeatType) {
@@ -27,60 +20,19 @@ class Seat{
 		room_id = 0;
 		seatType= pSeatType;
 	}
-
-	Seat(int pSeatNumber, Room room, SeatType pSeatType) {
-		seatNumber = pSeatNumber;
-		room_id = room.getRoomId();
-		seatType= pSeatType;
-	}
-
-	Seat(int seatNumber, int room_id, SeatType seatType ){
-		this.seatNumber= seatNumber;
-		this.room_id= room_id;
-		this.seatType = seatType;
-
+	
+	int getSeat_id() {
+		return(this.seat_id);
 	}
 
 	int getSeatNumber() {
 		return seatNumber;
 	}
-
-	void setSeat(int seat_id, int seatNumber, int room_id, String stringSeatType) {
-		this.seat_id = seat_id;
-		this.seatNumber = seatNumber;
-		this.room_id = room_id;
-		this.seatType = seatTypeFromString(stringSeatType);
-	}
-
-	void setSeatNumber(int pSeatNumber) {
-		seatNumber= pSeatNumber;
-	}
-
-
-	int getSeat_id() {
-		return(this.seat_id);
-	}
 	
 	SeatType getSeatType() {
 		return(this.seatType);
 	}
-
-	String seatTypeToString() {
-		switch (this.seatType) {
-		case LOVESEAT:
-			return("LOVESEAT");
-
-		case REGULAR:
-			return("REGULAR");
-
-		case LOGE:
-			return("LOGE");
-
-		default:
-			return("Something wrong at seatTypeToString at Class Room");
-		}
-	}
-
+	
 	private SeatType seatTypeFromString(String stringSeatType) {
 
 		SeatType seatType = SeatType.REGULAR;
@@ -99,11 +51,18 @@ class Seat{
 		}
 	}
 
-	void setRoomIdOfSeat(int roomId) {
-		room_id = roomId;
+	public void setSeat(int seat_id, int seatNumber, int room_id, String stringSeatType) {
+		this.seat_id = seat_id;
+		this.seatNumber = seatNumber;
+		this.room_id = room_id;
+		this.seatType = seatTypeFromString(stringSeatType);
 	}
 
-	void setRoomIdToNull() {
+	void setRoom_idOfSeat(int room_id) {
+		this.room_id = room_id;
+	}
+
+	void unsetRoom_idOfSeat() {
 
 		Database db = new Database();
 		String query = "UPDATE SEATS SET room_id = NULL WHERE seat_number = " + this.seatNumber + " AND room_id = " + this.room_id;
@@ -112,16 +71,15 @@ class Seat{
 		db = null;
 
 	}
-
-	void updateRoomIdOfSeat(int roomId){
+	
+	void updateRoom_idOfSeat(int room_id){
 
 		Database db = new Database();
-		String query = "UPDATE SEATS SET room_id = " + roomId+ " WHERE room_id is NULL";
+		String query = "UPDATE SEATS SET room_id = " + room_id+ " WHERE room_id is NULL";
 
 		db.updateDatabase(query);
 		db = null;
 	}
-
 
 	void saveSeat() {
 
@@ -130,14 +88,6 @@ class Seat{
 				+ " VALUES (" + seatNumber + "," + room_id + ", '"+ seatTypeToString()+ "')";
 
 		db.updateDatabase(query);
-	}
-
-	void deleteSeat() {
-		Database db = new Database();
-		String query = "DELETE FROM seats WHERE seat_number = " + this.seatNumber + " AND room_id= " + this.room_id;
-
-		db.updateDatabase(query);
-		db = null;
 	}
 
 	void updateSeat(int shift) {
@@ -149,6 +99,30 @@ class Seat{
 		db.updateDatabase(query);
 		db = null;
 	}
+	
+	void deleteSeat() {
+		Database db = new Database();
+		String query = "DELETE FROM seats WHERE seat_number = " + this.seatNumber + " AND room_id= " + this.room_id;
+
+		db.updateDatabase(query);
+		db = null;
+	}
+
+	String seatTypeToString() {
+		switch (this.seatType) {
+		case LOVESEAT:
+			return("LOVESEAT");
+
+		case REGULAR:
+			return("REGULAR");
+
+		case LOGE:
+			return("LOGE");
+
+		default:
+			return("Something wrong at seatTypeToString at Class Room");
+		}
+	}
 
 	public String toString() {
 
@@ -156,6 +130,3 @@ class Seat{
 		return string;
 	}
 }
-
-
-

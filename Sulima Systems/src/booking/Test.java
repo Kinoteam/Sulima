@@ -1,17 +1,22 @@
 package booking;
 
+import authentification.User;
+import core.*;
+
 public class Test {
 
 
 	public static void main(String[] args) {
 
-
+		User usr = new User();
+		usr.Login();
 		Reservation res = new Reservation();
+		
 		while (true){
-		res.showMovies();
+			res.showMovies();
 		}
 	}
-	
+
 	public static Room[] loadRooms() {
 
 		Room[] rooms = null;
