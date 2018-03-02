@@ -1,7 +1,7 @@
 # Sulima
 Kinosoftware
 
-#version 0.20
+# version 0.20
 + seat booking fully functional
 + fixed reserved Seats being shown as free if they were also reserved in another session.
 
