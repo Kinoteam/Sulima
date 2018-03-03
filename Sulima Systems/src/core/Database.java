@@ -17,7 +17,7 @@ public class Database {
 	{
 		try 
 		{
-			connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/sulima" , "root", "zbi");
+			connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/sulima" , "root", "");
 		}
 
 		catch (Exception dbError)

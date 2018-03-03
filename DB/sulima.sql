@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Feb 20, 2018 at 02:47 AM
+-- Generation Time: Mar 03, 2018 at 02:56 AM
 -- Server version: 10.1.28-MariaDB
 -- PHP Version: 7.1.10
 
@@ -21,6 +21,8 @@ SET time_zone = "+00:00";
 --
 -- Database: `sulima`
 --
+CREATE DATABASE IF NOT EXISTS `sulima` DEFAULT CHARACTER SET latin1 COLLATE latin1_swedish_ci;
+USE `sulima`;
 
 -- --------------------------------------------------------
 
@@ -62,7 +64,18 @@ CREATE TABLE `reservations` (
 INSERT INTO `reservations` (`reservation_id`, `session_id`, `seat_id`, `user_id`) VALUES
 (38, 1, 590, 1),
 (39, 3, 608, 1),
-(40, 1, 598, 1);
+(40, 1, 598, 1),
+(41, 2, 592, 1),
+(42, 2, 598, 1),
+(43, 3, 607, 1),
+(44, 2, 590, 1),
+(45, 1, 596, 1),
+(46, 5, 608, 1),
+(47, 4, 603, 1),
+(49, 1, 597, 1),
+(51, 1, 591, 1),
+(52, 1, 593, 1),
+(53, 5, 607, 1);
 
 -- --------------------------------------------------------
 
@@ -140,7 +153,11 @@ CREATE TABLE `sessions` (
 INSERT INTO `sessions` (`session_id`, `session_time`, `movie_id`, `room_id`) VALUES
 (1, '2018-02-10 20:00:00', 1, 1),
 (2, '2018-02-10 17:00:00', 2, 1),
-(3, '2018-02-10 23:00:00', 1, 2);
+(3, '2018-02-10 23:00:00', 1, 2),
+(4, '2018-03-03 18:00:00', 2, 2),
+(5, '2018-03-10 16:00:00', 2, 2),
+(7, '2018-04-01 19:00:00', 1, 2),
+(8, '2018-04-01 19:00:00', 1, 2);
 
 -- --------------------------------------------------------
 
@@ -159,7 +176,7 @@ CREATE TABLE `users` (
 --
 
 INSERT INTO `users` (`user_id`, `username`, `pwd`) VALUES
-(1, 'abraha', 'zbi');
+(1, 'root', 'root');
 
 --
 -- Indexes for dumped tables
@@ -216,31 +233,31 @@ ALTER TABLE `users`
 -- AUTO_INCREMENT for table `movies`
 --
 ALTER TABLE `movies`
-  MODIFY `movie_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `movie_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
 
 --
 -- AUTO_INCREMENT for table `reservations`
 --
 ALTER TABLE `reservations`
-  MODIFY `reservation_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=41;
+  MODIFY `reservation_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=54;
 
 --
 -- AUTO_INCREMENT for table `rooms`
 --
 ALTER TABLE `rooms`
-  MODIFY `room_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `room_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
 
 --
 -- AUTO_INCREMENT for table `seats`
 --
 ALTER TABLE `seats`
-  MODIFY `seat_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=609;
+  MODIFY `seat_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=925;
 
 --
 -- AUTO_INCREMENT for table `sessions`
 --
 ALTER TABLE `sessions`
-  MODIFY `session_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `session_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
 
 --
 -- AUTO_INCREMENT for table `users`
