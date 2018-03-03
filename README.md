@@ -1,6 +1,10 @@
 # Sulima
 Kinosoftware
 
+# version 0.25
++ fixed bug allowing to rebook a seat
++ added comments and Unit Tests
+
 # version 0.20
 + seat booking fully functional
 + fixed reserved Seats being shown as free if they were also reserved in another session.
