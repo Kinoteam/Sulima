@@ -12,451 +12,440 @@ public class Database {
 	private Connection connection = null;
 	private Statement statement = null;
 	private ResultSet resultSet = null;
-	private boolean connected = false;
 
-
-	private void connectToDatabase ()
+	private void connect()
 	{
-		try {
+		try 
+		{
 			connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/sulima" , "root", "zbi");
-			this.connected = true;
 		}
 
-		catch (Exception dbError){
+		catch (Exception dbError)
+		{
 			System.err.println("Error: Can't conect to Database");
 		}
-
 	}
 
-	public boolean isAlreadyInDatabase(String query) {
+	/*
+	 * checks if the ResultSet is not empty,
+	 * returns true in that case 
+	 *
+	 */
+	public boolean existsInDatabase(String query) {
 
-		if (connection == null) {
-			connectToDatabase();
+		//Before: Connect to Database
+		if (connection == null) 
+		{
+			connect();
 		}
 
+		//Begin: check if the ResultSet is not empty
 		boolean result = true;
-		if (connected) {
 
+		try 
+		{
+			statement = connection.createStatement();
+			resultSet = statement.executeQuery(query);
+			result = resultSet.isBeforeFirst();
+		}
 
-			try {
-				statement = connection.createStatement();
-				resultSet = statement.executeQuery(query);
-				if (!resultSet.isBeforeFirst() ) {    
-					result= false;
-				}
+		catch (Exception dbError)
+		{
+			dbError.printStackTrace();
+		}
 
-				else result = true;
-			}
-
-			catch (Exception dbError){
-				dbError.printStackTrace();
-			}
-
-			finally
-			{ 
-				try {
-					connection.close();
-					connection = null;
-				} 
-				catch (SQLException ignore) {}
-			}
+		//After: Close connection
+		finally
+		{ 
+			try 
+			{
+				connection.close();
+				connection = null;
+			} 
+			catch (SQLException ignore) {}
 		}
 		return result;
 	}
 
-	public void insertIntoDatabase(String query) {
+	/*
+	 * inserts new data, updates existing data,
+	 * or deletes data from the Database
+	 *
+	 */
+	public boolean update(String query) {
 
-		if (connection == null) {
-			connectToDatabase();
+		//Before: Connect to Database
+		if (connection == null) 
+		{
+			connect();
 		}
 
-		if(connected) {
+		//Begin: Insert/Update/Delete Data
+		boolean done = false;
+		try 
+		{
+			statement = connection.createStatement();
+			statement.executeUpdate(query);
+			done = true;
 
-			try {
-				statement = connection.createStatement();
-				statement.executeUpdate(query);
-
-			}
-
-			catch (Exception dbError){
-				dbError.printStackTrace();
-			}
-
-			finally
-			{ 
-				try {
-					connection.close();
-					connection = null;
-				} 
-				catch (SQLException ignore) {}
-			}
 		}
+
+		catch (Exception dbError)
+		{
+			dbError.printStackTrace();
+		}
+
+		//After: Close connection
+		finally
+		{ 
+			try 
+			{
+				connection.close();
+				connection = null;
+			} 
+			catch (SQLException ignore) {}
+		}
+		
+		return done;
 	}
+	
+	/*
+	 * returns the Count of elements from any table,
+	 * the column and the value for the "where" clause
+	 * must be provided as parameters
+	 * 
+	 */
+	public int getCountWithCondition(String table, String column, String value) {
 
-	public void updateDatabase(String query) {
-		if (connection == null) {
-			connectToDatabase();
+		//Before: Connect to Database
+		if (connection == null) 
+		{
+			connect();
 		}
-
-		if(connected) {
-
-			try {
-				statement = connection.createStatement();
-				statement.executeUpdate(query);
-			}
-
-			catch (Exception dbError){
-				dbError.printStackTrace();
-			}
-
-			finally
-			{ 
-				try {
-					connection.close();
-					connection = null;
-				} 
-				catch (SQLException ignore) {}
-			}
-		}
-	}
-
-	public int getCountWithCondition(String database, String column, String value) {
-
-		if (connection == null) {
-			connectToDatabase();
-		}
+		
+		//Begin: Get the Count
 		int result = 0;
-		if(connected) {
+		String query = "SELECT COUNT(*) FROM " + table + " where " + column + " = " + value;
 
-			String query = "SELECT COUNT(*) FROM " + database + " where " + column + " = " + value;
-
-			try {
-				statement = connection.createStatement();
-				resultSet = statement.executeQuery(query);
-				if (resultSet.next()) {
-					result = (resultSet.getInt("COUNT(*)"));
-				}
+		try 
+		{
+			statement = connection.createStatement();
+			resultSet = statement.executeQuery(query);
+			if (resultSet.next()) 
+			{
+				result = (resultSet.getInt("COUNT(*)"));
 			}
+		}
 
-			catch (Exception dbError){
-				dbError.printStackTrace();
-			}
+		catch (Exception dbError)
+		{
+			dbError.printStackTrace();
+		}
 
-			finally
-			{ 
-				try {
-					connection.close();
-					connection = null;
-				} 
-				catch (SQLException ignore) {}
-			}
+		//After: Close connection
+		finally
+		{ 
+			try 
+			{
+				connection.close();
+				connection = null;
+			} 
+			catch (SQLException ignore) {}
 		}
 		return result;
 	}
 
-	public void fetchMoviesFromDatabase(Movie[] movies, int rowsCount) {
+	/*
+	 * Loads all the movies from the Database in an array of movies
+	 * 
+	 */
+	public boolean fetchMovies(Movie[] movies, int rowsCount) {
 
-		if (connection == null) {
-			connectToDatabase();
+		// Before: Connect to Database
+		if (connection == null) 
+		{
+			connect();
 		}
-		if(connected) {
 
-			String query = "SELECT * FROM MOVIES";
+		// Begin: load all movies into the movies array
+		String query = "SELECT * FROM MOVIES";
+		boolean done=false;
 
-			try {
-				statement = connection.createStatement();
-				resultSet = statement.executeQuery(query);
-				if (resultSet.next())
+		try 
+		{
+			statement = connection.createStatement();
+			resultSet = statement.executeQuery(query);
+			if (resultSet.next()) 
+			{
+				for (int i=0; i<rowsCount; i++)
 				{
-					for (int i=0; i<rowsCount; i++)
-					{
-						movies[i] = new Movie();
-						movies[i].setMovie(resultSet.getInt("movie_id"),resultSet.getString("movie_name") );
-						resultSet.next();
-					}
+					movies[i] = new Movie(resultSet.getInt("movie_id"),resultSet.getString("movie_name") );
+					resultSet.next();
 				}
 			}
-
-			catch (Exception dbError){
-				dbError.printStackTrace();
-			}
-
-			finally
-			{ 
-				try {
-					connection.close();
-					connection = null;
-				} 
-				catch (SQLException ignore) {}
-			}
+			done=true;
 		}
+
+		catch (Exception dbError)
+		{
+			dbError.printStackTrace();
+		}
+
+		// After: Close Connection to Database
+		finally
+		{ 
+			try 
+			{
+				connection.close();
+				connection = null;
+			} 
+			catch (SQLException ignore) {}
+		}
+		return done;
 	}
 
-	public void fetchRoomsFromDatabase(Room[] rooms, int rowsCount) {
+	/*
+	 * Loads all the Rooms from the Database in an array of rooms
+	 * 
+	 */
+	public boolean fetchRooms(Room[] rooms, int rowsCount) {
 
-		if (connection == null) {
-			connectToDatabase();
+		// Before: Connect to Database
+		if (connection == null) 
+		{
+			connect();
 		}
 
-		if(connected) {
-
-			String query = "SELECT * FROM ROOMS";
-
-			try {
-				statement = connection.createStatement();
-				resultSet = statement.executeQuery(query);
-				if (resultSet.next())
+		// Begin: load all rooms into the rooms array
+		String query = "SELECT * FROM ROOMS";
+		boolean done = false;
+		try 
+		{
+			statement = connection.createStatement();
+			resultSet = statement.executeQuery(query);
+			if (resultSet.next())
+			{
+				for (int i=0; i<rowsCount; i++)
 				{
-					for (int i=0; i<rowsCount; i++)
-					{
-						rooms[i] = new Room();
-						rooms[i].assignRoom_idFromDB(resultSet.getInt("room_id"));
-						resultSet.next();
-					}
+					rooms[i] = new Room(resultSet.getInt("room_id"));
+					resultSet.next();
 				}
 			}
-
-			catch (Exception dbError){
-				dbError.printStackTrace();
-			}
-
-			finally
-			{ 
-				try {
-					connection.close();
-					connection = null;
-				} 
-				catch (SQLException ignore) {}
-			}
+			done = true;
 		}
+
+		catch (Exception dbError)
+		{
+			dbError.printStackTrace();
+		}
+
+		// After: Close Connection to Database
+		finally
+		{ 
+			try 
+			{
+				connection.close();
+				connection = null;
+			} 
+			catch (SQLException ignore) {}
+		}
+		return done;
 	}
 
-	public void fetchAllSessionsFromDatabase(Session[] sessions, int rowsCount) {
+	/*
+	 * Loads all the Sessions from the Database or the ones
+	 * relative to a specific movie in an array of sessions
+	 * 
+	 */
+	
+	public boolean fetchSessions(Session[] sessions, int rowsCount) {
+		return this.fetchSessions(sessions, rowsCount, 0);
+	}
+	public boolean fetchSessions(Session[] sessions, int rowsCount, int movie_id) {
 
-		if (connection == null) {
-			connectToDatabase();
+		// Before: Connect to Database
+		if (connection == null) 
+		{
+			connect();
 		}
-		if(connected) {
-			String query = "SELECT * FROM SESSIONS";
 
-			try {
-				statement = connection.createStatement();
-				resultSet = statement.executeQuery(query);
-				if (resultSet.next())
+		// Begin: load sessions into the sessions array 
+		String query = null;
+		if (movie_id !=0) 
+		{
+			 query = "SELECT * FROM SESSIONS where movie_id =" + movie_id;
+		}
+		else query = "SELECT * FROM SESSIONS";
+		
+		boolean done = false;
+		try {
+			statement = connection.createStatement();
+			resultSet = statement.executeQuery(query);
+			if (resultSet.next())
+			{
+				for (int i=0; i<rowsCount; i++)
 				{
-					for (int i=0; i<rowsCount; i++)
-					{
-						sessions[i] = new Session();
-						sessions[i].setSession(resultSet.getInt("session_id"),resultSet.getTimestamp("session_time"),
-								resultSet.getInt("room_id"), resultSet.getInt("movie_id"));
-						resultSet.next();
-					}
+					sessions[i] = new Session(resultSet.getInt("session_id"),resultSet.getTimestamp("session_time").toLocalDateTime(),
+							resultSet.getInt("room_id"), resultSet.getInt("movie_id"));
+					resultSet.next();
 				}
 			}
-
-			catch (Exception dbError){
-				dbError.printStackTrace();
-			}
-
-			finally
-			{ 
-				try {
-					connection.close();
-					connection = null;
-				} 
-				catch (SQLException ignore) {}
-			}
+			done = true;
 		}
+
+		catch (Exception dbError)
+		{
+			dbError.printStackTrace();
+		}
+		
+		// After: Close Connection to Database
+
+		finally
+		{ 
+			try 
+			{
+				connection.close();
+				connection = null;
+			} 
+			catch (SQLException ignore) {}
+		}
+		return done;
 	}
+	
+	/*
+	 * Loads all the Seats from a specific Room into an array of Seats
+	 * 
+	 */
+	public boolean fetchSeats(int room_id, Seat[] seats, int rowsCount) {
 
-	public void fetchSessionsFromDatabase(Session[] sessions, int movie_id, int rowsCount) {
-
-		if (connection == null) {
-			connectToDatabase();
+		// Before: Connect to Database
+		if (connection == null) 
+		{
+			connect();
 		}
 
-		if(connected) {
+		// Begin: load seats into the seats array 
+		String query = "SELECT * FROM SEATS WHERE room_id = " + room_id;
+		boolean done = false;
 
-			String query = "SELECT * FROM SESSIONS where movie_id =" + movie_id;
-
-			try {
-				statement = connection.createStatement();
-				resultSet = statement.executeQuery(query);
-				if (resultSet.next())
+		try {
+			statement = connection.createStatement();
+			resultSet = statement.executeQuery(query);
+			if (resultSet.next())
+			{
+				for (int i=0; i<rowsCount; i++)
 				{
-					for (int i=0; i<rowsCount; i++)
-					{
-						sessions[i] = new Session();
-						sessions[i].setSession(resultSet.getInt("session_id"),resultSet.getTimestamp("session_time"),
-								resultSet.getInt("room_id"), resultSet.getInt("movie_id"));
-						resultSet.next();
-					}
+					seats[i] = new Seat(resultSet.getInt("seat_id"), resultSet.getInt("seat_number") , resultSet.getInt("room_id") ,
+							resultSet.getString("seat_category"));
+					resultSet.next();
 				}
 			}
-
-			catch (Exception dbError){
-				dbError.printStackTrace();
-			}
-
-			finally
-			{ 
-				try {
-					connection.close();
-					connection = null;
-				} 
-				catch (SQLException ignore) {}
-			}
+			done = true;
 		}
+
+		catch (Exception dbError)
+		{
+			dbError.printStackTrace();
+		}
+
+		// After: Close Connection to Database
+		finally
+		{ 
+			try 
+			{
+				connection.close();
+				connection = null;
+			} 
+			catch (SQLException ignore) {}
+		}
+		
+		return done;
 	}
-
-	public void fetchSeatsFromDatabase(int room_id, Seat[] seats, int rowsCount) {
-
-		if (connection == null) {
-			connectToDatabase();
+	
+	/*
+	 * Puts the id's of Seats that are already reserved in an array of integers
+	 * 
+	 */
+	public boolean fetchReservedSeatsId(int[] array, int rowsToSubstract, int session_id) {
+		if (connection == null) 
+		{
+			connect();
 		}
-
-		if(connected) {
-
-			String query = "SELECT * FROM SEATS WHERE room_id = " + room_id;
-
-			try {
-				statement = connection.createStatement();
-				resultSet = statement.executeQuery(query);
-				if (resultSet.next())
+		String query = "SELECT * FROM RESERVATIONS where session_id = " + session_id;
+		boolean done = false;
+		try {
+			statement = connection.createStatement();
+			resultSet = statement.executeQuery(query);
+			if (resultSet.next())
+			{
+				for (int i=0; i<rowsToSubstract; i++)
 				{
-					for (int i=0; i<rowsCount; i++)
-					{
-						seats[i] = new Seat();
-						seats[i].setSeat(resultSet.getInt("seat_id"), resultSet.getInt("seat_number") , resultSet.getInt("room_id") ,
-								resultSet.getString("seat_category"));
-						resultSet.next();
-					}
+					array[i] = resultSet.getInt("seat_id");
+					resultSet.next();
 				}
 			}
-
-			catch (Exception dbError){
-				dbError.printStackTrace();
-			}
-
-			finally
-			{ 
-				try {
-					connection.close();
-					connection = null;
-				} 
-				catch (SQLException ignore) {}
-			}
+			done = true;
 		}
+
+		catch (Exception dbError)
+		{
+			dbError.printStackTrace();
+		}
+
+		finally
+		{ 
+			try 
+			{
+				connection.close();
+				connection = null;
+			} 
+			catch (SQLException ignore) {}
+		}
+		return done;
 	}
+	
+	/*
+	 * Returns an int from the database,
+	 * can return the count if the key is "Count(*)"
+	 * (on the condition that select count(*) is used on the query)
+	 * 
+	 */
+	public int getInt(String query, String key) {
 
-	public void fetchFreeSeatsFromDatabase(Seat[] seats, int session_id, int room_id, int rowsCount) {
-
-		if (connection == null) {
-			connectToDatabase();
+		// Before: Connect to Database
+		if (connection == null) 
+		{
+			connect();
 		}
-
-		if(connected) {
-
-			String query = "SELECT * FROM SEATS s left OUTER join RESERVATIONS r on s.seat_id = r.seat_id "
-					+ "where s.room_id = " + room_id + " AND (r.session_id != " + session_id +" or r.session_id is null) ORDER BY seat_number";
-			System.out.println(query);
-			try {
-				statement = connection.createStatement();
-				resultSet = statement.executeQuery(query);
-				if (resultSet.next())
-				{
-					for (int i=0; i<rowsCount; i++)
-					{
-						seats[i] = new Seat();
-						seats[i].setSeat(resultSet.getInt("seat_id"), resultSet.getInt("seat_number") , resultSet.getInt("room_id") ,
-								resultSet.getString("seat_category"));
-						resultSet.next();
-					}
-				}
-			}
-
-			catch (Exception dbError){
-				dbError.printStackTrace();
-			}
-
-			finally
-			{ 
-				try {
-					connection.close();
-					connection = null;
-				} 
-				catch (SQLException ignore) {}
-			}
-		}
-	}
-
-	public int getIntFromDatabase(String query, String key) {
-
+		
+		// Begin: get an int
+		
 		int result = 0;
-		if (connection == null) {
-			connectToDatabase();
+
+		try {
+			statement = connection.createStatement();
+			resultSet = statement.executeQuery(query);
+			if (resultSet.next()) 
+			{
+				result = resultSet.getInt(key);
+			}
 		}
 
-		if(connected) {
+		catch (Exception dbError)
+		{
+			dbError.printStackTrace();
+		}
 
-			try {
-				statement = connection.createStatement();
-				resultSet = statement.executeQuery(query);
-				if (resultSet.next()) {
-					result = resultSet.getInt(key);
-				}
-			}
-
-			catch (Exception dbError){
-				dbError.printStackTrace();
-			}
-
-			finally
-			{ 
-				try {
-					connection.close();
-					connection = null;
-				} 
-				catch (SQLException ignore) {}
-			}
+		// After: Close Connection to Database
+		finally
+		{ 
+			try 
+			{
+				connection.close();
+				connection = null;
+			} 
+			catch (SQLException ignore) {}
 		}
 		return result;
-	}
-
-	public void fetchReservedSeats(int[] array, int rowsToSubstract, int session_id) {
-		if (connection == null) {
-			connectToDatabase();
-		}
-		if(connected) {
-			String query = "SELECT * FROM RESERVATIONS where session_id = " + session_id;
-
-			try {
-				statement = connection.createStatement();
-				resultSet = statement.executeQuery(query);
-				if (resultSet.next())
-				{
-					for (int i=0; i<rowsToSubstract; i++)
-					{
-						array[i] = resultSet.getInt("seat_id");
-						resultSet.next();
-					}
-				}
-			}
-
-			catch (Exception dbError){
-				dbError.printStackTrace();
-			}
-
-			finally
-			{ 
-				try {
-					connection.close();
-					connection = null;
-				} 
-				catch (SQLException ignore) {}
-			}
-		}
 	}
 }
-
-

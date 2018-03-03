@@ -13,6 +13,12 @@ public class Movie {
 	
 	public Movie(String movieName) {
 		this.movieName = movieName;
+		this.save();
+	}
+	
+	public Movie(int movie_id, String movieName) {
+		this.movie_id = movie_id;
+		this.movieName = movieName;
 	}
 	
 	public int getMovie_id() {
@@ -23,15 +29,16 @@ public class Movie {
 		return this.movieName;
 	}
 	
-	public void setMovie(int movie_id, String movieName) {
-		this.movie_id = movie_id;
-		this.movieName = movieName;
+	
+	private boolean save() {
+		Database db = new Database();
+		return db.update("INSERT INTO movies (movie_name)"
+				+ " VALUES ('" + this.movieName+"')");
 	}
 	
-	public void saveMovie() {
+	public boolean delete() {
 		Database db = new Database();
-		db.insertIntoDatabase("INSERT INTO movies (movie_name)"
-				+ " VALUES ('" + this.movieName+"')");
+		return db.update("DELETE FROM movies WHERE movie_name = '" + this.movieName+"'");
 	}
 	
 	public String toString() {

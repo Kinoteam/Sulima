@@ -5,27 +5,35 @@ import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.Test;
 import core.Database;
 
+/**
+ * These tests are also testing the Seat class, namely the methods:
+ * 	Seat(int, int , int , String)
+ * 	Seat(int, SeatType)
+ * 	setRoom_id(int)
+ * 	save()
+ * 	unsetRoom_id()
+ * 	updateRoom_id
+ * 	delete()
+ */
 class RoomTest {
 
 	Room rooms[]= null;
-	Room room1 = null;
-	Room room2 = null;
-	Room room3 = null;
-
+	Room room = null;
 
 	Room[] LoadRooms(){
 
 		Database db = new Database();
 		String query = "SELECT COUNT(*) FROM ROOMS";
 		String key = "COUNT(*)";
-		int rowsCount = db.getIntFromDatabase(query, key);
+		int rowsCount = db.getInt(query, key);
 
 		if (rowsCount > 0) {
 
 			rooms= new Room[rowsCount];
-			db.fetchRoomsFromDatabase(rooms, rowsCount);
+			db.fetchRooms(rooms, rowsCount);
 
-			for (int i=0; i<rowsCount; i++) {
+			for (int i=0; i<rowsCount; i++) 
+			{
 				rooms[i].loadSeats();
 			}
 		}
@@ -34,38 +42,44 @@ class RoomTest {
 		return rooms;
 	}
 
-	@Test 								/*test 1*/
-	void testRoom(){
-		rooms=this.LoadRooms();
-		assertNotNull(rooms);
-	}
 
-
-	@Test								/*test 2*/
-	void testRoomInt() {
-
-		room1 = new Room(1);
-		assertEquals(room1.getRoom_id(), 0);
-
-	}
-
-	@Test								/*test 3*/
+	@Test							
 	void testRoomIntIntIntInt() {
 		
-		room2 = new Room(10, 1, 0, -5);
-		assertEquals(room2.getRoom_id(), 0);
-		
-		room3 = new Room(3,5,2,1);
-		assertEquals(room3.getRoom_id(), 3);
+		room = new Room(3,5,2,1);
+		assertEquals(room.getRoom_id(), 3);
 	}
 	
-	
-
-	@Test								/*test 4*/
-	void testDeleteRoom() {
+/*
+ * testDelete() will fail if executed before testAddseats() or testRoomIntIntIntInt()
+ * 
+ */
+	@Test							
+	void testDelete() {
 		rooms = this.LoadRooms();
-		rooms[2].deleteRoom();
+		rooms[2].delete();
+		rooms[3].delete();
 		rooms = this.LoadRooms();
 		assertEquals(rooms.length, 2);
+	}
+	
+	@Test							
+	void testAddseats() {
+		
+		room = new Room(5, 0, 0, 0);
+		room.addSeats(1, SeatType.REGULAR);
+		assertEquals(room.getNumberOfSeats(), 1);
+		
+	}
+	
+	@Test							
+	void testUpdate() {
+		room = new Room(5, 1,0,1);
+		rooms = this.LoadRooms();
+		rooms[2].setRoom_id(9);
+		rooms = this.LoadRooms();
+		assertEquals(rooms[2].getRoom_id() , 9);
+		rooms[2].delete();
+		
 	}
 }

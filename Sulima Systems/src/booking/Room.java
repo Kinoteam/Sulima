@@ -4,13 +4,13 @@ import core.Database;
 
 public class Room{
 
-	private int room_id; // unique
+	private int room_id;
 	private int numberOfSeats;
 	private int numberOfRegularSeats;
 	private int numberOfLoveSeats;
 	private int numberOfLogeSeats;
-	private Seat[] roomSeats; // Array seats belonging to this room
-
+	private Seat[] roomSeats;
+	Database db = new Database();
 
 	public Room() {
 
@@ -20,71 +20,66 @@ public class Room{
 		this.numberOfSeats = 0;
 		this.roomSeats = null;
 	}
-	
+
 	public Room(int room_id){
+		this.room_id = room_id;
+	}
 
-		this(room_id,0,0,0);
-
-	}// Room(room_id) constructor
-
+	/*
+	 * This constructor is meant as a quick way to set up a room and its seats, 
+	 * so it has to check if the room_id provided is not
+	 * already existing in the database
+	 */
 	public Room(int room_id, int numberOfRegularSeats, int numberOfLoveSeats, int numberOfLogeSeats){
 
-		/*because the room has to be saved in order to add seats to it,
-		 * only a valid room_id will be accepted, 
-		 * this means room_id > 0 and Unique.
-		 */
-		if (room_id > 0 && numberOfRegularSeats >=0 && numberOfLoveSeats >=0 && numberOfLogeSeats >=0) {
-			if (isIdUnique(room_id))  /* if the room_id is unique*/
+		// Step 1: create the room and save it to database
+		if (room_id > 0 && numberOfRegularSeats >=0 && numberOfLoveSeats >=0 && numberOfLogeSeats >=0) 
+		{
+			if (isIdUnique(room_id))
 			{ 
-				/*create and save the room before adding seats*/
 				this.room_id = room_id;  
 				this.numberOfRegularSeats = 0;
 				this.numberOfLoveSeats = 0;
 				this.numberOfLogeSeats = 0;
 				this.numberOfSeats = 0;
 				roomSeats = null;
+				save();  
 
-				saveRoom();  /* the room must be saved to Database because
-				 * the room_id is a Foreign key in the table Seats
-				 **/
-
-				/*now can add seats*/
-
+				// Step 2: add seats to the room
 				if (numberOfRegularSeats > 0)
 				{
-					addSeatsToRoom(numberOfRegularSeats, SeatType.REGULAR);
+					addSeats(numberOfRegularSeats, SeatType.REGULAR);
 				}
 
 				if (numberOfLoveSeats > 0)
 				{
-					addSeatsToRoom(numberOfLoveSeats, SeatType.LOVESEAT);
-
+					addSeats(numberOfLoveSeats, SeatType.LOVESEAT);
 				}
 
 				if (numberOfLogeSeats > 0)
 				{
-					addSeatsToRoom(numberOfLogeSeats, SeatType.LOGE);
+					addSeats(numberOfLogeSeats, SeatType.LOGE);
 				}
-			}// if room_id is unique
-			else {
+			}
+
+			else 
+			{
 				System.err.println("Error: Room already exists");
 				this.room_id = 0;
 			}
-		}// if args>0
+		}
 
 		else {
 			System.err.println("Error: One or more parameters not allowed");
 			this.room_id = 0;
 		}
-
-	}// Room(int Id, int, int, int) Constructor
+	}
 
 	public int getRoom_id() {
 		return this.room_id;
 	}
-	
+
 	public int getNumberOfSeats() {
-		System.out.println(this.numberOfSeats);
 		return this.numberOfSeats;
 	}
 
@@ -100,60 +95,51 @@ public class Room{
 		return this.numberOfLogeSeats;
 	}
 
-	public void assignRoom_idFromDB(int room_id) {
-		this.room_id = room_id;
-	}
-
+	/* 
+	 * This setter is meant as a way to manually set a room_id, 
+	 * as such, a check must be done to ensure that the new room_id
+	 * is not already existing in the database, 
+	 * and that the reference to the room is also updated in the seats
+	 * belonging to that room, if there are any
+	 */
 	public void setRoom_id(int room_id) {
 
-		/* This check is done by a query to database because a Room has
-		 * no way of checking the other rooms, if one already has this room_id.
-		 * The other way around would be a check performed from a parent class.
-		 */
 
-		if (room_id > 0) {
-			if(isIdUnique(room_id))   /* only if the new room_id is unique*/
-			{ 
-				if(this.roomSeats != null) {
-					/*Step 1: set the foreign key "room_id" 
-					 * to Null for all seats belonging to this room
-					 * */
-					for (int i=0; i<this.numberOfSeats; i++) {
-						this.roomSeats[i].unsetRoom_idOfSeat();
-					}
-
-					/*Step 2: update the room_id in the database 
-					 * then change the class variable room_id
-					 * */
-
-					this.changeRoom_id(room_id);
-					this.room_id = room_id;
-
-					/*Step 3: assign all the previously unassigned seats
-					 * to the new room_id
-					 */
-
-					for (int i=0; i<this.numberOfSeats; i++) {
-						this.roomSeats[i].updateRoom_idOfSeat(room_id);
-					}
-
-				}// if(this.roomSeats != null)
-
-				else {
-					this.changeRoom_id(room_id);
-					this.room_id = room_id;
+		if(room_id > 0 && isIdUnique(room_id))
+		{ 
+			// Step 1: Set the room_id reference to null in the seats table
+			if(this.roomSeats != null)
+			{
+				for (int i=0; i<this.numberOfSeats; i++) 
+				{
+					this.roomSeats[i].unsetRoom_id();
 				}
 
-			}// if(isIdUnique(room_id))
-			else System.err.println("Error: Room already exists in database");
-		}// if room_id >0
-		else System.err.println("Error: Room_id not allowed");
+				// Step 2: save the new room_id to the database 
 
+				this.changeRoom_id(room_id);
+				this.room_id = room_id;
+
+				// Step 3: update the room_id reference unset in Step 1
+
+				for (int i=0; i<this.numberOfSeats; i++) 
+				{
+					this.roomSeats[i].updateRoom_id(room_id);
+				}
+			}
+			else 
+			{
+				this.changeRoom_id(room_id);
+				this.room_id = room_id;
+			}
+		}
+		else System.err.println("Error: Room already exists or new Id is invalid");
 	}
 
 	private void setNumberOfSeats() {
 
-		for (int i = 0; i< this.roomSeats.length; i++) {
+		for (int i = 0; i< this.roomSeats.length; i++) 
+		{
 
 			if (this.roomSeats[i].getSeatType() == SeatType.REGULAR)
 			{
@@ -169,16 +155,14 @@ public class Room{
 				numberOfLogeSeats++ ;
 			}
 			else System.err.println("Error: something weird happened at Class Room, Method setNumberOfSeats()");
-
 		}
-
 		numberOfSeats = numberOfRegularSeats + numberOfLoveSeats + numberOfLogeSeats;
-
 	}
 
 	public void updateNumberOfSeats(int seatsAdded, SeatType seatType) {
 
-		switch (seatType) {
+		switch (seatType) 
+		{
 		case LOVESEAT:
 			this.numberOfLoveSeats += seatsAdded;
 			this.numberOfSeats += seatsAdded;
@@ -192,79 +176,62 @@ public class Room{
 			this.numberOfSeats += seatsAdded;
 
 		default:
-			System.err.println("updateNumberOfSeats at Class Room: Something went");
+			System.err.println("Error Class Room, Method updateNumberOfSeats()");
 		}
-
 	}
 
-	public void saveRoom() {
+	private void save() {
 
-		if (this.room_id>0) {
-			Database db = new Database();
-			String query = "INSERT INTO ROOMS (room_id)"
-					+ " VALUES (" + room_id +")";
-			db.updateDatabase(query);
-
-			query=null; db = null; /*clearing memory*/
-		}
-		else {
-			System.err.println("saveRoom() at Room: Cannot save a room with this room_id");
-		}
-	}// ...saveRoom()
+		String query = "INSERT INTO rooms (room_id) VALUES (" + room_id +")";
+		db.update(query);
+		query=null;
+	}
 
 	private void changeRoom_id(int room_id) {
-
-		Database db = new Database();
-		String query = "UPDATE ROOMS SET room_id = " + room_id +" WHERE room_id = " + this.room_id;
-		db.updateDatabase(query);
-		query=null; db = null; /*clearing memory*/
-	}// updateRoom()
-
-	private boolean isIdUnique(int room_id) {
-		String query = "SELECT * FROM ROOMS WHERE room_id = " + room_id;
-		Database db = new Database();
-		boolean isUnique = false;
-		if(!db.isAlreadyInDatabase(query)){
-			return !isUnique;
-		}
-		else return isUnique;
+		String query = "UPDATE rooms SET room_id = " + room_id +" WHERE room_id = " + this.room_id;
+		db.update(query);
+		query=null;
 	}
 
-	public void loadSeats() {
+	private boolean isIdUnique(int room_id) {
+		String query = "SELECT * FROM rooms WHERE room_id = " + room_id;
+		return (!db.existsInDatabase(query));
+	}
 
+
+	public void loadSeats() {
+		
+		// Before: check if there are seats in that room
 		Seat[] seats = null;
-		Database db = new Database();
 		String query = "SELECT COUNT(*) FROM SEATS WHERE room_id = " + room_id;
 		String key = "COUNT(*)";
-		int rowsCount = db.getIntFromDatabase(query, key);
+		int rowsCount = db.getInt(query, key);
 
-		if (rowsCount > 0) {
-
+		// Begin: Load Seats
+		if (rowsCount > 0)
+		{
 			seats= new Seat[rowsCount];
-			db.fetchSeatsFromDatabase( room_id ,seats, rowsCount);
+			db.fetchSeats( room_id ,seats, rowsCount);
 			roomSeats = seats;
 			setNumberOfSeats();
 		}
 
 		else System.out.println("No seats in this room");
+		query = null; key=null; seats=null;
+	}
 
-		db = null; query = null; key=null; seats=null; /*clearing memory*/
+	public void addSeats(int seatsToAdd, SeatType seatType) {
 
-	}// loadSeats()
-
-	public void addSeatsToRoom(int seatsToAdd, SeatType seatType) {
-
-			// 1- create a new Array of seats
+		// Step 1: create seats and set their reference to this room_id
 		Seat[] seats= new Seat[seatsToAdd];
 		for (int i= 0; i < seatsToAdd; i++)
 		{
-			// 2- create a new instance of Seat in the new Array of seats
 			seats[i] = new Seat(this.numberOfSeats + 1+i, seatType);
-
-			// set the Room_id variable IN the Seat instance to that of the Room it belongs to.
-			seats[i].setRoom_idOfSeat(this.room_id);
-			seats[i].saveSeat();
-		}// for loop
+			seats[i].setRoom_id(this.room_id);
+			seats[i].save();
+		}
+		
+		// Step 2: increment the seat count
 		if (seatType == SeatType.REGULAR)
 		{
 			this.numberOfRegularSeats+= seatsToAdd;
@@ -279,52 +246,57 @@ public class Room{
 
 		else if (seatType == SeatType.LOGE)
 		{
-
 			this.numberOfLogeSeats= seatsToAdd;
 			this.numberOfSeats += seatsToAdd;
 		}
 		else
-			System.out.println(this.getNumberOfSeats());
+		{
+			System.err.println("Error at Class Room, Method addSeatsToRoom()");
+		}
 
 		this.roomSeats = seats;
-		seats=null; /*clearing memory*/
-	}// Method addSeatsToRoom()
+		seats=null; 
+	}
 
-	public void deleteSeatsFromRoom(int lowerBoundary, int upperBoundary) {
-		/*this Function is meant to remove the seats that have their
-		 *  seatNumber between the two boundaries, boundaries included.
-		 *  having the same number N as boundaries means the seat with the number N
-		 *  will be removed
-		 */
+	/*
+	 *  This Function is meant to remove the seats that have their
+	 *  seatNumber between the two boundaries, boundaries included.
+	 *  If the boundaries are the same, only the seat with that
+	 *  number will be removed.
+	 */
+	public void deleteSeats(int lowerBoundary, int upperBoundary) {
 
 		if (upperBoundary>= lowerBoundary && lowerBoundary>0 && upperBoundary <= this.numberOfSeats )
 		{
-			for (int i = 0; i<this.numberOfSeats; i++) {
-				if(this.roomSeats[i].getSeatNumber()>= lowerBoundary && this.roomSeats[i].getSeatNumber()<= upperBoundary) {
-					this.roomSeats[i].deleteSeat();
+			for (int i = 0; i<this.numberOfSeats; i++) 
+			{
+				// Step 1: Remove the seats between the 2 boundaries
+				if(this.roomSeats[i].getSeatNumber()>= lowerBoundary && this.roomSeats[i].getSeatNumber()<= upperBoundary) 
+				{
+					this.roomSeats[i].delete();
 				}
-				else if(this.roomSeats[i].getSeatNumber()> upperBoundary) { 
-					this.roomSeats[i].updateSeat((upperBoundary+1-lowerBoundary));
+				// Step 2: update the seat number of the remaining seats
+				else if(this.roomSeats[i].getSeatNumber()> upperBoundary) 
+				{ 
+					this.roomSeats[i].update((upperBoundary+1-lowerBoundary));
 				}
+			}	
+		}
+		else System.out.println("Error at Class Room, Method deleteSeatsFromRoom(int int)");
+	}
 
+	public void delete() {
 
-			}// for loop	
-		}// initial if condition
-		else System.out.println("Error: Delete arguments out of boundaries");
-	}// Method removeSeatsFromRoom()
-
-	public void deleteRoom() {
-
+		// Step 1: delete the Seats if they exist
 		if (this.numberOfSeats!=0) {
-			deleteSeatsFromRoom(1 , this.numberOfSeats);
+			deleteSeats(1 , this.numberOfSeats);
 		}
 		this.roomSeats = null;
-		Database db = new Database();
-		String query = "DELETE FROM rooms WHERE room_id = " + this.room_id;
-		db.updateDatabase(query);
-		db = null;
 
-	}// removeRoom()
+		// Step 2: delete the Room
+		String query = "DELETE FROM rooms WHERE room_id = " + this.room_id;
+		db.update(query);
+	}
 
 	public String toString() {
 		String string ="";
@@ -332,4 +304,4 @@ public class Room{
 				", Loveseats: " + this.numberOfLoveSeats + ", Loges:" + this.numberOfLogeSeats;
 		return string;
 	}
-}// Class Room
+}

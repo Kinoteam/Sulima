@@ -6,11 +6,18 @@ import org.junit.jupiter.api.Test;
 
 class ReservationTest {
 
+	/*
+	 * 
+	 * 	REQUIRES MANUAL INPUT
+	 * 
+	 * 	login: root
+	 * 	pwd: root
+	 * 
+	 */
 	
 	@Test
 	void testShowMovies() {
 		Reservation reservation = new Reservation();
-		reservation.showMovies();
-		assertEquals(reservation.getSeat_id(), 590);
+		assertEquals(reservation.showMovies() , true);
 	}
 }
